@@ -1,0 +1,12 @@
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\bin\Debug\creditdebt.exe.config
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\bin\Debug\creditdebt.exe
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\bin\Debug\creditdebt.pdb
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.csprojResolveAssemblyReference.cache
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.Properties.Resources.resources
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.csproj.GenerateResource.Cache
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.exe
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.pdb
+c:\users\matanfih\documents\visual studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.csproj.ResolveComReference.cache
+C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\creditdebt\obj\Debug\creditdebt.Form1.resources
+C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\creditdebt\obj\Debug\Interop.Microsoft.Office.Core.dll
+C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\creditdebt\bin\Debug\CreditExpensesApp.exe.config
