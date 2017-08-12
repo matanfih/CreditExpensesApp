@@ -19,7 +19,7 @@ namespace CreditExpensesApp
         string result = "results.txt";
 
         string dic = "dictionary.txt";
-        Dictionary<string, string> dictionary;
+        //Dictionary<string, string> dictionary;
 
         bool firstround = true;
 
@@ -37,7 +37,7 @@ namespace CreditExpensesApp
         }
         private bool init()
         {
-            if (firstround)
+            if (firstround)//try creating missing files , should be done only once
             {
                 string missingfile = currentdir + @"\" + config;
                 config = missingfile;
@@ -70,53 +70,48 @@ namespace CreditExpensesApp
                 firstround = false;
             }
             /////////////////////////////////read config file /////////////////////////////////////////////////
-            //templateDic = new Dictionary<string, credit>();
-            ReadConfigFile();
-
-
+            //ReadConfigFile();
             ///////////////////////////////////////////////////////////////////////////////////////////////////
             if (!System.IO.File.Exists(missingValues))
             {
                 System.IO.File.Create(missingValues);
             }
-            if (System.IO.File.ReadAllText(missingValues).
-                    Replace('\t',' ').Replace('\r',' ').
-                        Replace('\n',' ').Trim().Length == 0){
-                            result = currentdir + @"\" + result;
-                            return true;
-/*                if (System.IO.Directory.Exists(Config.instance().startDialogFolder))
-                    folderBrowserDialog1.SelectedPath = Config.instance().startDialogFolder;            
-                if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    folderPath = folderBrowserDialog1.SelectedPath;
-                    Config.instance().startDialogFolder = folderPath;
-                    //writeConfigFile(FolderRootStart + "=" + folderBrowserDialog1.SelectedPath);
 
-                    TextBox1.AppendText("folder found! moving to parse it");
-                    TextBox1.BackColor = Color.Green;
-                }
-                else
+            ConfigurationManger.getCMInstance().readConfigFile();
+
+            /*read missing vlaues if there unanswered categories break else add them to dictionary and clear file !!!*/
+
+            /*if (System.IO.File.ReadAllText(missingValues).
+                    Replace('\t',' ').Replace('\r',' ').
+                        Replace('\n',' ').Trim().Length == 0){*/
+            
+            List<BwithoutCategory> BwoC = new List<BwithoutCategory>();
+            
+            ConfigurationManger.getCMInstance().getConfig().BussinessWithoutCategory.ForEach(x=> {
+                if (string.IsNullOrEmpty( x.category)) BwoC.Add(x);
+                else/* adding filled categories to B2Category dictionary */
                 {
-                    TextBox1.BackColor = Color.Red;
-                    TextBox1.AppendText("bad folder :( choose another one\n");
-                    return false;
-                }*/
+                    ConfigurationManger.getCMInstance().getConfig().B2Category.Add(x.name, x.category);
+                }
+            });
+
+            if (BwoC.Count == 0)
+            {
+                /*no empty categories !! we can now remove the list */
+                ConfigurationManger.getCMInstance().getConfig().BussinessWithoutCategory.Clear();
+                result = currentdir + @"\" + result;
+                return true;
             }
             else
             {
                 TextBox1.BackColor = Color.Red;
-                TextBox1.AppendText("missing file is not empty !!!");
-                TextBox1.AppendText("1) go over it move values to dictionary ");
-                TextBox1.AppendText("2) delete all rows or file");
+                TextBox1.AppendText("missing category are not empty is not empty !!!");
+                TextBox1.AppendText("1) go over it and fill missing categories!!");
+                TextBox1.AppendText("2) give High5 to yourself");
                 TextBox1.AppendText("3) try again");
                 return false;
             }
             
-
-
-            
-
-            return true;
         }
 
         enum FILES_TO_WRITE
@@ -163,6 +158,9 @@ namespace CreditExpensesApp
             var configrows = System.IO.File.ReadAllLines(config);
             Config.instance().initConfig(configrows.ToList(),config);
             Config.instance().parseConfig();
+
+
+
         }
         /*private void writeConfigFile(string input)
         {
@@ -186,141 +184,24 @@ namespace CreditExpensesApp
             if (init() == false)
                 return;
 
-            intConf();
+            SetConfBackToStart();
 
             IgetFilesToParse FileSeekerInterface = new getFilesFromFolder(folderBrowserDialog1, TextBox1);
 
             var files = FileSeekerInterface.getFiles();
-            //var files = System.IO.Directory.GetFiles(folderPath).ToList();
+
             //get all files in chosen folder
+
             handleFiles(files);
-            
-            /*
-            List<string> excels = new List<string>();
-            
 
-            //fill up dictionary
-            dictionary = new Dictionary<string, string>();
-            foreach (var r in System.IO.File.ReadAllLines(dic))
-            {
-                if (!string.IsNullOrEmpty(r))
-                {
-                    var words = r.Split('=').ToList();
-
-                    if (words.Count == 2 && !dictionary.ContainsKey(words[0]))
-                    {
-                        dictionary.Add(words[0], words[1]);
-                    }
-                }
-            }
-
-            //get all excels 
-            string exten;
-            foreach (var f in files)
-            {
-                exten = System.IO.Path.GetExtension(f);
-                if (exten == ".xlsx" || exten == ".xls")
-                    excels.Add(f);
-            }
-                
-            if (excels.Count == 0)
-            {
-                TextBox1.AppendText("no excel files found in floder !!\n");
-                TextBox1.BackColor = Color.Green;
-                return;
-            }
-
-
-
-            //iterate over excels;
-            foreach (var ex in excels)
-	        {
-                var excel = Read_From_Excel.getExcelFile(ex);
-                TextBox1.BackColor = Color.Green;
-                TextBox1.AppendText(string.Format("reading excel:[{0}]\n",ex));
-
-                //calc MD5 for excel template ////////
-                string template ="";
-                foreach (var w in excel[0])
-	            {
-                    template += w;
-	            }
-                var MD5 = Read_From_Excel.CalculateMD5Hash(template);
-                //////////////////////////////////////
-
-                credit cval;
-                if (!Config.instance().templateDic.TryGetValue(MD5, out cval))
-                {
-                    Config.instance().templateDic.Add(MD5, new credit(-1, -1,-1));
-                    //writeConfigFile(Exceltemplate + "=" + MD5 + "," + "?????" + "\n");
-
-                    TextBox1.BackColor = Color.Red;
-                    TextBox1.AppendText(string.Format("missing template in config file[{0}] !!!\n",config));
-                    TextBox1.AppendText("better call Matan Integration Inc. [052-7758661]\n");
-                    return;
-                }
-                else
-                {
-                    List<string> r;
-                    //var excelRanged = excel.GetRange(cval.StartRow, excel.Count - 1);
-                    for (int i = cval.StartRow; i < excel.Count; i++ )
-                    //foreach (var r in excel.GetRange(1,excel.Count-1))
-                    {
-                        r = excel[i];
-                        if (r.Count < cval.sum || r.Count < cval.nameIndex)
-                            continue;
-                        string category;
-                        if (!dictionary.TryGetValue(r[cval.nameIndex], out category))
-                        {
-                            writeFile(FILES_TO_WRITE.MISSING, r[cval.nameIndex]);
-                            TextBox1.BackColor = Color.Yellow;
-                            TextBox1.AppendText(string.Format("missing category for [{0}] !!!\n\n", r[cval.nameIndex]));
-                        }
-                        else
-                        {
-                            if (!CategoryResultDic.ContainsKey(category))
-                            {
-                                CategoryResultDic.Add(category, new creditResult());
-                            }
-
-                            CategoryResultDic[category].category = category;
-                            CategoryResultDic[category].relatedRows.Add(r);
-                            CategoryResultDic[category].sum += Convert.ToDouble(r[cval.sum]);
-
-
-                        }
-                    }
-                    TextBox1.BackColor = Color.WhiteSmoke;
-                    
-                    
-                    TextBox1.AppendText("parsing finished\n");
-
-                    System.IO.File.WriteAllText(result, "");
-                    foreach (var pair in CategoryResultDic)
-	                {
-                        TextBox1.AppendText(string.Format("Category\n{0}\n", pair.Value.category));
-                        TextBox1.AppendText(string.Format("final sum\n{0}\n", pair.Value.sum));
-                        writeFile(FILES_TO_WRITE.RESULT, pair.Value);
-	                }
-
-
-                    
-
-                }
-	        }
-            
-            */
         }
 
         private void handleFiles(List<string> files)
         {
-            
-            
             List<string> excels = new List<string>();
-            
 
             //fill up dictionary
-            dictionary = new Dictionary<string, string>();
+            /*dictionary = new Dictionary<string, string>();
             foreach (var r in System.IO.File.ReadAllLines(dic))
             {
                 if (!string.IsNullOrEmpty(r))
@@ -332,7 +213,7 @@ namespace CreditExpensesApp
                         dictionary.Add(words[0], words[1]);
                     }
                 }
-            }
+            }*/
 
             //get all excels 
             string exten;
@@ -367,11 +248,14 @@ namespace CreditExpensesApp
                 }
                 var MD5 = Read_From_Excel.CalculateMD5Hash(template);
                 //////////////////////////////////////
-
+                var configuration = ConfigurationManger.getCMInstance().getConfig();
                 credit cval;
-                if (!Config.instance().templateDic.TryGetValue(MD5, out cval))
-                {
-                    Config.instance().templateDic.Add(MD5, new credit(-1, -1, -1));
+                //if (!Config.instance().templateDic.TryGetValue(MD5, out cval))
+               
+                if (!configuration.ExTemplates.TryGetValue(MD5, out cval))
+                {/*temp solution !!*/
+                    
+                    configuration.ExTemplates.Add(MD5, new credit(-1, -1, -1));
                     //writeConfigFile(Exceltemplate + "=" + MD5 + "," + "?????" + "\n");
 
                     TextBox1.BackColor = Color.Red;
@@ -390,10 +274,11 @@ namespace CreditExpensesApp
                         if (r.Count < cval.sum || r.Count < cval.nameIndex)
                             continue;
                         string category;
-                        if (!dictionary.TryGetValue(r[cval.nameIndex], out category))
+                        if (!configuration.B2Category.TryGetValue(r[cval.nameIndex], out category))
                         {
-                            writeFile(FILES_TO_WRITE.MISSING, r[cval.nameIndex]);
-                            TextBox1.BackColor = Color.Yellow;
+                            configuration.BussinessWithoutCategory.Add(new BwithoutCategory( r[cval.nameIndex]));
+                            //writeFile(FILES_TO_WRITE.MISSING, r[cval.nameIndex]);
+                            //TextBox1.BackColor = Color.Yellow;
                             TextBox1.AppendText(string.Format("missing category for [{0}] !!!\n\n", r[cval.nameIndex]));
                         }
                         else//value found in dectionary
@@ -434,7 +319,7 @@ namespace CreditExpensesApp
             }
         }
 
-        private void intConf()
+        private void SetConfBackToStart()
         {
             result = "results.txt";
             CategoryResultDic.Clear();
@@ -449,27 +334,14 @@ namespace CreditExpensesApp
             if (init() == false)
                 return;
 
-            intConf();
+            SetConfBackToStart();
 
             IgetFilesToParse FileSeekerInterface = new getFile(openFileDialog1, TextBox1);
 
             var files = FileSeekerInterface.getFiles();
-            //var files = System.IO.Directory.GetFiles(folderPath).ToList();
+            
             //get all files in chosen folder
             handleFiles(files);
-
-            /*intConf();
-            
-            
-            if (System.IO.Directory.Exists(Config.instance().startDialogFolder))
-                    openFileDialog1.InitialDirectory = Config.instance().startDialogFolder;            
-            var res = openFileDialog1.ShowDialog();
-            if (res == System.Windows.Forms.DialogResult.OK)
-            {
-                var file = openFileDialog1.FileName;
-            }*/
-
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -480,32 +352,30 @@ namespace CreditExpensesApp
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Config.instance().writeConfigFile();
+            //Config.instance().writeConfigFile();
+            if (ConfigurationManger.getCMInstance().IsConfigFull)
+                ConfigurationManger.getCMInstance().saveConfigFile(ConfigurationManger.getCMInstance().getConfig());
         }
 
-    }
-    public class credit
-    {
-        
-
-
-        //public credit(int nameIndex, string nameIndexString, int sum, string sumCellName)
-        public credit(int nameIndex,int sum,int StartRow)
+        private void button2_Click(object sender, EventArgs e)
         {
-            this.nameIndex = nameIndex;
-            //this.nameIndexString = nameIndexString;
-            this.sum = sum;
-            //this.sumCellName = sumCellName;
-            this.StartRow = StartRow;
-            namesToExclude = new List<string>();
-            namesToExclude.Add("לאצריך");
+            init();
+            
+            /*if (dictionary.Count != 0)
+            {
+                Configuration confi = new Configuration();
+                confi.ExTemplates = Config.instance().templateDic;
+                //confi.ExTemplates
+                confi.B2Category = dictionary;
+                ConfigurationManger.getCMInstance().saveConfigFile(confi);
+            }else*/
+            {
+                ConfigurationManger.getCMInstance().readConfigFile();
+                ConfigurationManger.getCMInstance().saveConfigFile(ConfigurationManger.getCMInstance().getConfig());
+            }
+
         }
-        public List<string> namesToExclude;
-        public int nameIndex;
-        //public string nameIndexString;//what is written in the cell  ...
-        public int sum;
-        public int StartRow;
-        //public string sumCellName;
+
     }
     public class creditResult
     {
@@ -532,10 +402,9 @@ namespace CreditExpensesApp
             return inst;
         }
         private const string Exceltemplate = "Exceltemplate";
-        private const string StartDialogFolder = "StartDialogFolder";
-        
+        //private const string StartDialogFolder = "StartDialogFolder";
+        //public string startDialogFolder;
         List<string> execlExtensions;
-        public string startDialogFolder;
         public Dictionary<string, credit> templateDic;
         List<string> rows;
         private string configPath;
@@ -552,11 +421,12 @@ namespace CreditExpensesApp
             {
                 List<string> w = r.Split('=').ToList();
 
-                if (w[0] == StartDialogFolder)
+                /*if (w[0] == StartDialogFolder)
                 {
                     startDialogFolder = w[1];
                 }
-                else if (w[0] == Exceltemplate)
+                else */
+                if (w[0] == Exceltemplate)
                 {
                     var t = w[1].Split(',');
                     var c = t[1].Split('|');

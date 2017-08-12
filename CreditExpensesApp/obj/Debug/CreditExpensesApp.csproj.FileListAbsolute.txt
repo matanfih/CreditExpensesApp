@@ -20,3 +20,5 @@ C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpense
 C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpensesApp\CreditExpensesApp\obj\Debug\CreditExpensesApp.Form1.resources
 C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpensesApp\CreditExpensesApp\obj\Debug\CreditExpensesApp.Properties.Resources.resources
 C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpensesApp\CreditExpensesApp\obj\Debug\CreditExpensesApp.csproj.GenerateResource.Cache
+C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpensesApp\CreditExpensesApp\bin\Debug\Newtonsoft.Json.dll
+C:\Users\matanfih\Documents\Visual Studio 2013\Projects\creditdebt\CreditExpensesApp\CreditExpensesApp\bin\Debug\Newtonsoft.Json.xml

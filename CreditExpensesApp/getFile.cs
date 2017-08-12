@@ -19,11 +19,13 @@ namespace CreditExpensesApp
 
         public List<string> getFiles()
         {
-            if (System.IO.Directory.Exists(Config.instance().startDialogFolder))
-                    FD.InitialDirectory = Config.instance().startDialogFolder;            
+            if (System.IO.Directory.Exists(ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath))
+                    FD.InitialDirectory = ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath;            
             var res = FD.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
-            {List<string> retlist = new List<string>();
+            {
+                ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath = System.IO.Directory.GetParent(FD.FileName).ToString();
+                List<string> retlist = new List<string>();
                 var file = FD.FileName;
                 retlist.Add(file);
                 return retlist;

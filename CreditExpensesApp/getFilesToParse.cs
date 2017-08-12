@@ -22,12 +22,12 @@ namespace CreditExpensesApp
         }
         List<string> IgetFilesToParse.getFiles()
         {
-            if (System.IO.Directory.Exists(Config.instance().startDialogFolder))
-                    FBD.SelectedPath = Config.instance().startDialogFolder;            
+            if (System.IO.Directory.Exists(ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath))
+                FBD.SelectedPath = ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath;            
                 if (FBD.ShowDialog() == DialogResult.OK)
                 {
                     var folderPath = FBD.SelectedPath;
-                    Config.instance().startDialogFolder = folderPath;
+                    ConfigurationManger.getCMInstance().getConfig().LastFolderDialogPath = folderPath;
                     //writeConfigFile(FolderRootStart + "=" + folderBrowserDialog1.SelectedPath);
 
                     RTB.AppendText("folder found! moving to parse it");

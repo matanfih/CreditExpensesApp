@@ -35,24 +35,53 @@ namespace CreditExpensesApp
         int SumZeroBasedIndex;
         int StartRowZeroBasedIndex;
     }
+    public class BwithoutCategory 
+    {
+        public BwithoutCategory(string name)
+        {
+            this.name = name;
+            category = string.Empty;
+        }
+        public string name;
+        public string category;
+    }
     public class Configuration
     {
         public string LastFolderDialogPath;
         public string LastFileDialogPath;
         public Dictionary<string, string> B2Category = new Dictionary<string, string>();
+        public List<BwithoutCategory> BussinessWithoutCategory = new List<BwithoutCategory>();
         public Dictionary<string, credit> ExTemplates = new Dictionary<string, credit>();
     }
 
     class ConfigurationManger
     {
-
-        private Configuration config = new Configuration();
+        private static ConfigurationManger CMInstance; 
+        private Configuration config;
+        public bool IsConfigFull ;
+        private ConfigurationManger()
+        {
+            //private ctor
+            config = new Configuration();
+            IsConfigFull = false;
+        }
+        public static ConfigurationManger getCMInstance()
+        {
+            if (CMInstance == null) CMInstance = new ConfigurationManger();
+            return CMInstance;
+        }
+        public Configuration getConfig()
+        {
+            return config;
+        }
+        
         public void readConfigFile()
         {
             if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\Configuration2Json"))
             {
                 var json = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory() + @"\Configuration2Json");
                 config = JsonConvert.DeserializeObject<Configuration>(json);
+                IsConfigFull = true;
             }
         }
         public void saveConfigFile(object conf=null)
@@ -60,17 +89,13 @@ namespace CreditExpensesApp
             string json;
             if (conf == null)//debug ?
             {
-                //((Configuration)config).B2Category.Add("kaka", "bathroom");
-                //((Configuration)config).B2Category.Add("pipi", "livingroom");
-                //Save(config, System.IO.Directory.GetCurrentDirectory() + "\\Config.xml", typeof(Config));
-                json = JsonConvert.SerializeObject(config);
-
+                json = JsonConvert.SerializeObject(config,Formatting.Indented);
             }
-            json = JsonConvert.SerializeObject(conf);
+            json = JsonConvert.SerializeObject(conf,Formatting.Indented);
 
             System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + @"\Configuration2Json", json);
 
-            Configuration confi2 = JsonConvert.DeserializeObject<Configuration>(json);    
+            //Configuration confi2 = JsonConvert.DeserializeObject<Configuration>(json);    
         }
 
         /*private void Save(Object file, String path, Type type)
